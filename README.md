@@ -106,7 +106,7 @@ PyPI Trusted Publisher einrichten:
 | Project | `flin-chatgpt-ads-mcp` |
 | Owner | `flin-agency` |
 | Repository | `flin-chatgpt-ads-mcp` |
-| Workflow | `publish.yml` |
+| Workflow | `release.yml` |
 | Environment | `pypi` |
 
 Das GitHub-Environment `pypi` ebenfalls anlegen. Releases lösen Tests, PyPI-Publishing
