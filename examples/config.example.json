@@ -1,0 +1,7 @@
+{
+  "default_account": "kunde_a",
+  "accounts": {
+    "kunde_a": {"api_key": "HIER_ADVERTISER_API_KEY_EINTRAGEN"},
+    "kunde_b": {"api_key_env": "OPENAI_ADS_KUNDE_B_API_KEY"}
+  }
+}

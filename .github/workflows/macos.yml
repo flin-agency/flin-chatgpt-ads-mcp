@@ -1,0 +1,25 @@
+name: macOS package
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+      - run: bash scripts/build_macos.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flin-chatgpt-ads-mcp-macos
+          path: dist/
+      - if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" dist/*.pkg dist/*.zip dist/SHA256SUMS --clobber

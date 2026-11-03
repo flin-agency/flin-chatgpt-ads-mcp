@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "flin-chatgpt-ads-mcp"
+version = "0.1.0"
+description = "Read-only OpenAI Ads MCP server with per-account API keys"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{name = "flin.agency"}]
+dependencies = ["mcp>=1.26,<2", "httpx>=0.28,<1", "jsonschema>=4.23,<5"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-asyncio>=0.24,<2", "ruff>=0.9"]
+
+[project.scripts]
+flin-chatgpt-ads-mcp = "flin_chatgpt_ads_mcp.server:main"
+
+[project.urls]
+Repository = "https://github.com/flin-agency/flin-chatgpt-ads-mcp"
+Issues = "https://github.com/flin-agency/flin-chatgpt-ads-mcp/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/flin_chatgpt_ads_mcp"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"

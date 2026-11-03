@@ -1,0 +1,23 @@
+name: Publish PyPI
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+      - run: uv sync --extra dev --locked
+      - run: uv run pytest
+      - run: uv run ruff check .
+      - run: uv build
+      - uses: pypa/gh-action-pypi-publish@release/v1

@@ -1,0 +1,2263 @@
+{
+  "list_campaigns": {
+    "path": "/campaigns",
+    "description": "Get all campaigns for an ad account",
+    "parameters": [
+      {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.campaigns.CampaignListIncludeParam"
+          }
+        }
+      },
+      {
+        "name": "name",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000,
+          "pattern": "^.*\\S.*$"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.campaigns.CampaignListIncludeParam"
+          }
+        },
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000,
+          "pattern": "^.*\\S.*$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "order": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "get_campaign": {
+    "path": "/campaigns/{campaign_id}",
+    "description": "Get a campaign",
+    "parameters": [
+      {
+        "name": "campaign_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.campaigns.CampaignGetItemIncludeParam"
+          }
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "campaign_id": {
+          "type": "string"
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.campaigns.CampaignGetItemIncludeParam"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "campaign_id"
+      ]
+    }
+  },
+  "list_audit_logs": {
+    "path": "/audit_logs",
+    "description": "List audit logs for the authenticated ad account.",
+    "parameters": [
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      },
+      {
+        "name": "campaign_id",
+        "in": "query",
+        "description": "Object ID of the campaign. Includes logs for the campaign and its ad groups and ads.",
+        "required": false,
+        "schema": {
+          "description": "Object ID of the campaign. Includes logs for the campaign and its ad groups and ads.",
+          "type": "string"
+        }
+      },
+      {
+        "name": "ad_group_id",
+        "in": "query",
+        "description": "Object ID of the ad group. Includes logs for the ad group and its ads.",
+        "required": false,
+        "schema": {
+          "description": "Object ID of the ad group. Includes logs for the ad group and its ads.",
+          "type": "string"
+        }
+      },
+      {
+        "name": "ad_id",
+        "in": "query",
+        "description": "Object ID of the ad.",
+        "required": false,
+        "schema": {
+          "description": "Object ID of the ad.",
+          "type": "string"
+        }
+      },
+      {
+        "name": "actor_id",
+        "in": "query",
+        "description": "ID of the actor who made the change, not the affected user.",
+        "required": false,
+        "schema": {
+          "description": "ID of the actor who made the change, not the affected user.",
+          "type": "string"
+        }
+      },
+      {
+        "name": "start_time",
+        "in": "query",
+        "description": "Inclusive start time as a Unix timestamp in seconds.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 946684800,
+          "maximum": 4102444800,
+          "description": "Inclusive start time as a Unix timestamp in seconds."
+        }
+      },
+      {
+        "name": "end_time",
+        "in": "query",
+        "description": "Inclusive end time as a Unix timestamp in seconds.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 946684800,
+          "maximum": 4102444800,
+          "description": "Inclusive end time as a Unix timestamp in seconds."
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "order": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        },
+        "campaign_id": {
+          "description": "Object ID of the campaign. Includes logs for the campaign and its ad groups and ads.",
+          "type": "string"
+        },
+        "ad_group_id": {
+          "description": "Object ID of the ad group. Includes logs for the ad group and its ads.",
+          "type": "string"
+        },
+        "ad_id": {
+          "description": "Object ID of the ad.",
+          "type": "string"
+        },
+        "actor_id": {
+          "description": "ID of the actor who made the change, not the affected user.",
+          "type": "string"
+        },
+        "start_time": {
+          "type": "integer",
+          "minimum": 946684800,
+          "maximum": 4102444800,
+          "description": "Inclusive start time as a Unix timestamp in seconds."
+        },
+        "end_time": {
+          "type": "integer",
+          "minimum": 946684800,
+          "maximum": 4102444800,
+          "description": "Inclusive end time as a Unix timestamp in seconds."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "get_ad_account": {
+    "path": "/ad_account",
+    "description": "Get metadata for the ad account",
+    "parameters": [],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "get_ad_account_spend_limit_windows": {
+    "path": "/ad_account/spend_limit_windows",
+    "description": "View spend limit windows with inclusive start dates and exclusive end dates, ordered by start time ascending. Active and upcoming Daily recurrence rules are returned separately in daily_limits; daily_limit retains the active or earliest upcoming rule for legacy clients. data remains dated windows only. Creating account spending limits requires an ad account on postpaid invoice billing.",
+    "parameters": [],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "get_ad_account_insights": {
+    "path": "/ad_account/insights",
+    "description": "Get ad account insights aggregated by time granularity. Attribution metrics for the current account-local day are preliminary and may change as conversions are processed.",
+    "parameters": [
+      {
+        "name": "attribution_window_days",
+        "in": "query",
+        "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 30,
+          "enum": [
+            7,
+            14,
+            30
+          ],
+          "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view."
+        }
+      },
+      {
+        "name": "view_through_attribution_window_days",
+        "in": "query",
+        "description": "View attribution window: 0 excludes views; 1 includes one-day views.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "enum": [
+            0,
+            1
+          ],
+          "description": "View attribution window: 0 excludes views; 1 includes one-day views."
+        }
+      },
+      {
+        "name": "attribution_time_basis",
+        "in": "query",
+        "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "conversion_time",
+            "ad_event_time"
+          ],
+          "x-openai-class-name": "sofa.api.params.insights.AttributionTimeBasisParam",
+          "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time."
+        }
+      },
+      {
+        "name": "time_granularity",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "aggregation_level",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "time_ranges",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "filters",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "fields",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "segments",
+        "in": "query",
+        "description": "Use [\"hotel\"] for enrolled accounts to request Hotel-property reporting. Hotel supports none/daily/monthly, hierarchy aggregation, and forward pagination. Property conversions, carousel-card metrics and geography/device segments are unsupported.",
+        "required": false,
+        "schema": {
+          "description": "Use [\"hotel\"] for enrolled accounts to request Hotel-property reporting. Hotel supports none/daily/monthly, hierarchy aggregation, and forward pagination. Property conversions, carousel-card metrics and geography/device segments are unsupported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "override_segment_group_order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "includes",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "attribution_window_days": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 30,
+          "enum": [
+            7,
+            14,
+            30
+          ],
+          "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view."
+        },
+        "view_through_attribution_window_days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "enum": [
+            0,
+            1
+          ],
+          "description": "View attribution window: 0 excludes views; 1 includes one-day views."
+        },
+        "attribution_time_basis": {
+          "type": "string",
+          "enum": [
+            "conversion_time",
+            "ad_event_time"
+          ],
+          "x-openai-class-name": "sofa.api.params.insights.AttributionTimeBasisParam",
+          "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time."
+        },
+        "time_granularity": {
+          "type": "string"
+        },
+        "aggregation_level": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        },
+        "before": {
+          "type": "string"
+        },
+        "after": {
+          "type": "string"
+        },
+        "time_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "segments": {
+          "description": "Use [\"hotel\"] for enrolled accounts to request Hotel-property reporting. Hotel supports none/daily/monthly, hierarchy aggregation, and forward pagination. Property conversions, carousel-card metrics and geography/device segments are unsupported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "override_segment_group_order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "get_campaign_insights": {
+    "path": "/campaigns/{campaign_id}/insights",
+    "description": "Get campaign insights aggregated by time granularity. Attribution metrics for the current account-local day are preliminary and may change as conversions are processed.",
+    "parameters": [
+      {
+        "name": "campaign_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "attribution_window_days",
+        "in": "query",
+        "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 30,
+          "enum": [
+            7,
+            14,
+            30
+          ],
+          "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view."
+        }
+      },
+      {
+        "name": "view_through_attribution_window_days",
+        "in": "query",
+        "description": "View attribution window: 0 excludes views; 1 includes one-day views.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "enum": [
+            0,
+            1
+          ],
+          "description": "View attribution window: 0 excludes views; 1 includes one-day views."
+        }
+      },
+      {
+        "name": "attribution_time_basis",
+        "in": "query",
+        "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "conversion_time",
+            "ad_event_time"
+          ],
+          "x-openai-class-name": "sofa.api.params.insights.AttributionTimeBasisParam",
+          "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time."
+        }
+      },
+      {
+        "name": "time_granularity",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "aggregation_level",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "time_ranges",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "filters",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "fields",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "segments",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "override_segment_group_order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "includes",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "campaign_id": {
+          "type": "string"
+        },
+        "attribution_window_days": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 30,
+          "enum": [
+            7,
+            14,
+            30
+          ],
+          "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view."
+        },
+        "view_through_attribution_window_days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "enum": [
+            0,
+            1
+          ],
+          "description": "View attribution window: 0 excludes views; 1 includes one-day views."
+        },
+        "attribution_time_basis": {
+          "type": "string",
+          "enum": [
+            "conversion_time",
+            "ad_event_time"
+          ],
+          "x-openai-class-name": "sofa.api.params.insights.AttributionTimeBasisParam",
+          "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time."
+        },
+        "time_granularity": {
+          "type": "string"
+        },
+        "aggregation_level": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        },
+        "before": {
+          "type": "string"
+        },
+        "after": {
+          "type": "string"
+        },
+        "time_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "override_segment_group_order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "campaign_id"
+      ]
+    }
+  },
+  "get_ad_group_insights": {
+    "path": "/ad_groups/{ad_group_id}/insights",
+    "description": "Get ad group insights aggregated by time granularity. Attribution metrics for the current account-local day are preliminary and may change as conversions are processed.",
+    "parameters": [
+      {
+        "name": "ad_group_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "attribution_window_days",
+        "in": "query",
+        "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 30,
+          "enum": [
+            7,
+            14,
+            30
+          ],
+          "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view."
+        }
+      },
+      {
+        "name": "view_through_attribution_window_days",
+        "in": "query",
+        "description": "View attribution window: 0 excludes views; 1 includes one-day views.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "enum": [
+            0,
+            1
+          ],
+          "description": "View attribution window: 0 excludes views; 1 includes one-day views."
+        }
+      },
+      {
+        "name": "attribution_time_basis",
+        "in": "query",
+        "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "conversion_time",
+            "ad_event_time"
+          ],
+          "x-openai-class-name": "sofa.api.params.insights.AttributionTimeBasisParam",
+          "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time."
+        }
+      },
+      {
+        "name": "time_granularity",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "aggregation_level",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "time_ranges",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "filters",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "fields",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "segments",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "override_segment_group_order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "includes",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "ad_group_id": {
+          "type": "string"
+        },
+        "attribution_window_days": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 30,
+          "enum": [
+            7,
+            14,
+            30
+          ],
+          "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view."
+        },
+        "view_through_attribution_window_days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "enum": [
+            0,
+            1
+          ],
+          "description": "View attribution window: 0 excludes views; 1 includes one-day views."
+        },
+        "attribution_time_basis": {
+          "type": "string",
+          "enum": [
+            "conversion_time",
+            "ad_event_time"
+          ],
+          "x-openai-class-name": "sofa.api.params.insights.AttributionTimeBasisParam",
+          "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time."
+        },
+        "time_granularity": {
+          "type": "string"
+        },
+        "aggregation_level": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        },
+        "before": {
+          "type": "string"
+        },
+        "after": {
+          "type": "string"
+        },
+        "time_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "override_segment_group_order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ad_group_id"
+      ]
+    }
+  },
+  "get_ad_insights": {
+    "path": "/ads/{ad_id}/insights",
+    "description": "Get ad insights aggregated by time granularity. Attribution metrics for the current account-local day are preliminary and may change as conversions are processed.",
+    "parameters": [
+      {
+        "name": "ad_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "attribution_window_days",
+        "in": "query",
+        "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 30,
+          "enum": [
+            7,
+            14,
+            30
+          ],
+          "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view."
+        }
+      },
+      {
+        "name": "view_through_attribution_window_days",
+        "in": "query",
+        "description": "View attribution window: 0 excludes views; 1 includes one-day views.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "enum": [
+            0,
+            1
+          ],
+          "description": "View attribution window: 0 excludes views; 1 includes one-day views."
+        }
+      },
+      {
+        "name": "attribution_time_basis",
+        "in": "query",
+        "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "conversion_time",
+            "ad_event_time"
+          ],
+          "x-openai-class-name": "sofa.api.params.insights.AttributionTimeBasisParam",
+          "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time."
+        }
+      },
+      {
+        "name": "time_granularity",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "aggregation_level",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "time_ranges",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "filters",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "fields",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "segments",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "override_segment_group_order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "includes",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "ad_id": {
+          "type": "string"
+        },
+        "attribution_window_days": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 30,
+          "enum": [
+            7,
+            14,
+            30
+          ],
+          "description": "Click attribution window: 7, 14, or 30 days. Omitted or null windows independently default to 30-day click and 1-day view."
+        },
+        "view_through_attribution_window_days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "enum": [
+            0,
+            1
+          ],
+          "description": "View attribution window: 0 excludes views; 1 includes one-day views."
+        },
+        "attribution_time_basis": {
+          "type": "string",
+          "enum": [
+            "conversion_time",
+            "ad_event_time"
+          ],
+          "x-openai-class-name": "sofa.api.params.insights.AttributionTimeBasisParam",
+          "description": "Date reports by the attributed ad interaction (ad_event_time) or conversion (conversion_time). Defaults to ad_event_time."
+        },
+        "time_granularity": {
+          "type": "string"
+        },
+        "aggregation_level": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        },
+        "before": {
+          "type": "string"
+        },
+        "after": {
+          "type": "string"
+        },
+        "time_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "override_segment_group_order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ad_id"
+      ]
+    }
+  },
+  "get_geo_lookup": {
+    "path": "/geo_lookup/search",
+    "description": "Search Market locations and standard region codes for advertiser geo targeting.",
+    "parameters": [
+      {
+        "name": "q",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "q": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "q"
+      ]
+    }
+  },
+  "list_conversion_event_settings": {
+    "path": "/conversions/event_settings",
+    "description": "List conversion event settings for the currently authenticated ad account.",
+    "parameters": [
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "order": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "list_conversion_sources": {
+    "path": "/conversions/pixels",
+    "description": "List conversion pixels and connected pixel ids for the acting ad account.",
+    "parameters": [
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "order": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "list_ad_groups": {
+    "path": "/ad_groups",
+    "description": "Get ad groups for the ad account, optionally filtered by campaign",
+    "parameters": [
+      {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.ad_groups.AdGroupsListIncludeParam"
+          }
+        }
+      },
+      {
+        "name": "campaign_id",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "name",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000,
+          "pattern": "^.*\\S.*$"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.ad_groups.AdGroupsListIncludeParam"
+          }
+        },
+        "campaign_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000,
+          "pattern": "^.*\\S.*$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "order": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "get_ad_group": {
+    "path": "/ad_groups/{ad_group_id}",
+    "description": "Get an ad group",
+    "parameters": [
+      {
+        "name": "ad_group_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.ad_groups.AdGroupItemIncludeParam"
+          }
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "ad_group_id": {
+          "type": "string"
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.ad_groups.AdGroupItemIncludeParam"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ad_group_id"
+      ]
+    }
+  },
+  "list_ads": {
+    "path": "/ads",
+    "description": "Get ads for the ad account, optionally filtered by ad group",
+    "parameters": [
+      {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.ads.AdsListIncludeParam"
+          }
+        }
+      },
+      {
+        "name": "ad_group_id",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "name",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000,
+          "pattern": "^.*\\S.*$"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.ads.AdsListIncludeParam"
+          }
+        },
+        "ad_group_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000,
+          "pattern": "^.*\\S.*$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "order": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "x-openai-class-name": "sofa.api.params.common.ListOrderParam"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "get_ad": {
+    "path": "/ads/{ad_id}",
+    "description": "Get an ad",
+    "parameters": [
+      {
+        "name": "ad_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.ads.AdItemIncludeParam"
+          }
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "ad_id": {
+          "type": "string"
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "serving_issues"
+            ],
+            "x-openai-class-name": "sofa.api.params.ads.AdItemIncludeParam"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ad_id"
+      ]
+    }
+  },
+  "get_landing_page_crawler_evidence": {
+    "path": "/ads/{ad_id}/landing_page_crawl",
+    "description": "Get saved landing-page crawler evidence for an ad's submitted version. Includes metadata for successful and failed captures and, when available, a read-only screenshot URL valid for up to 24 hours. Returns 404 when no capture is available and 409 while the capture is pending. The status describes the crawl job, not the destination's HTTP status. This read-only operation does not start a crawl.",
+    "parameters": [
+      {
+        "name": "ad_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "ad_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ad_id"
+      ]
+    }
+  },
+  "get_product_feed_settings": {
+    "path": "/feeds/{feed_id}/settings",
+    "description": "Get display and organic-listing settings for an owned feed.",
+    "parameters": [
+      {
+        "name": "feed_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "feed_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "feed_id"
+      ]
+    }
+  },
+  "list_product_feeds": {
+    "path": "/feeds",
+    "description": "List product feeds for the authenticated ad account.",
+    "parameters": [
+      {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "product_count"
+            ],
+            "x-openai-class-name": "sofa.api.params.product_feeds.ProductFeedsListIncludeParam"
+          }
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "product_count"
+            ],
+            "x-openai-class-name": "sofa.api.params.product_feeds.ProductFeedsListIncludeParam"
+          }
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "list_product_feed_uploads": {
+    "path": "/feeds/uploads",
+    "description": "List recent product feed uploads for the authenticated ad account.",
+    "parameters": [
+      {
+        "name": "paginate",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Configured account alias. Required when multiple accounts are configured without a default."
+        },
+        "paginate": {
+          "type": "boolean"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
