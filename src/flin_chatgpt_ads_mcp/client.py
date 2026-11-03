@@ -9,8 +9,10 @@ import httpx
 from jsonschema import Draft202012Validator
 
 from .config import Config
+from .insights import describe_insights, normalize_insights
 
 OPERATIONS = json.loads(files(__package__).joinpath("operations.json").read_text())
+describe_insights(OPERATIONS)
 BASE_URL = "https://api.ads.openai.com/v1"
 
 
@@ -31,6 +33,10 @@ class AdsClient:
         if errors:
             # Validation messages may contain input values, including secrets.
             raise AdsError("Invalid tool arguments. Check the tool input schema.")
+        try:
+            arguments = normalize_insights(name, arguments)
+        except ValueError as exc:
+            raise AdsError(str(exc)) from None
         alias, key = self.config.select(arguments.get("account"))
         path = op["path"]
         params = []

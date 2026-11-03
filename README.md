@@ -1,7 +1,7 @@
 # flin ChatGPT Ads MCP
 
 Read-only MCP für die **OpenAI Advertiser API**, mit separaten API-Keys pro Kundenkonto.
-Python 3.11+, MCP über stdio. Version 0.1.1.
+Python 3.11+, MCP über stdio. Version 0.1.2.
 
 ## Funktionen
 
@@ -17,7 +17,7 @@ Werkzeugparameter angefordert. Weiterleitungen werden nicht verfolgt.
 
 ## Claude Desktop auf macOS (.mcpb)
 
-Für Claude Desktop **`flin-chatgpt-ads-mcp-0.1.1.mcpb`** aus den GitHub-Releases laden
+Für Claude Desktop **`flin-chatgpt-ads-mcp-0.1.2.mcpb`** aus den GitHub-Releases laden
 und öffnen bzw. in Claude Desktop als lokale Erweiterung installieren.
 In den Erweiterungseinstellungen den **OpenAI Ads API-Key** eintragen. Für mehrere
 Kundenkonten stattdessen eine JSON-Datei wie im Abschnitt Konfiguration auswählen.
@@ -35,7 +35,7 @@ von Claude verwaltete Erweiterung.
 
 ## Alternative macOS-Installation für andere MCP-Clients
 
-1. `flin-chatgpt-ads-mcp-0.1.1-macos.pkg` öffnen. Es legt das Installationspaket
+1. `flin-chatgpt-ads-mcp-0.1.2-macos.pkg` öffnen. Es legt das Installationspaket
    unter `/Applications/flin ChatGPT Ads MCP` ab. Alternativ die ZIP entpacken.
 2. Dort `install.command` öffnen. Benötigt **uv oder Python 3.11+** und Internet
    für Abhängigkeiten. Mit uv wird bei Bedarf Python 3.12 bereitgestellt.
@@ -136,7 +136,13 @@ Beispielargumente für `get_ad_account_insights`:
 ```
 
 Zeitstempel an den gewünschten Berichtszeitraum und die Kontozone anpassen.
-`time_ranges`, `filters` und `sort` enthalten JSON-kodierte Strings gemäss API.
+`time_ranges` akzeptiert auch `["2026-10-01..2026-11-02"]`: beide Tage inklusive,
+in der Kontozone. Der MCP übersetzt dies in den dokumentierten `date_range`-Typ;
+auch Zeitumstellungen bleiben dadurch korrekt. JSON-kodierte Zeitbereiche funktionieren weiterhin.
+Bei unsegmentierten Berichten werden kurze Kennzahlennamen wie `clicks`, `spend`
+oder `conversions` um die Berichtsebene ergänzt, z. B. `campaign.clicks`.
+Ohne `fields` liefert die API standardmässig überwiegend Impressionen und Metadaten.
+`filters` und `sort` enthalten JSON-kodierte Strings gemäss API.
 Fehlende Kennzahlen sind nicht automatisch null/0; aktuelle Tagesdaten können vorläufig sein.
 
 ## Entwicklung
