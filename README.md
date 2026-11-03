@@ -1,7 +1,7 @@
 # flin ChatGPT Ads MCP
 
 Read-only MCP für die **OpenAI Advertiser API**, mit separaten API-Keys pro Kundenkonto.
-Python 3.11+, MCP über stdio. Version 0.1.2.
+Python 3.11+, MCP über stdio. Version 0.1.3.
 
 ## Funktionen
 
@@ -17,25 +17,34 @@ Werkzeugparameter angefordert. Weiterleitungen werden nicht verfolgt.
 
 ## Claude Desktop auf macOS (.mcpb)
 
-Für Claude Desktop **`flin-chatgpt-ads-mcp-0.1.2.mcpb`** aus den GitHub-Releases laden
+Für Claude Desktop **`flin-chatgpt-ads-mcp-0.1.3.mcpb`** aus den GitHub-Releases laden
 und öffnen bzw. in Claude Desktop als lokale Erweiterung installieren.
 In den Erweiterungseinstellungen den **OpenAI Ads API-Key** eintragen. Für mehrere
 Kundenkonten stattdessen eine JSON-Datei wie im Abschnitt Konfiguration auswählen.
 Die ausgewählte Datei hat Vorrang; ohne Dateiauswahl wird nur der eingetragene Key genutzt.
 
 Benötigt eine aktuelle Claude-Desktop-Version mit MCPB-0.4-/UV-Unterstützung.
-Claude Desktop verwaltet Python und Abhängigkeiten; beim ersten Start ist Internet nötig.
-Das Paket enthält den Servercode und benötigt für die Erstinstallation kein PyPI-Release.
+Claude Desktop verwaltet Python und Abhängigkeiten. Bei jedem MCP-Start prüft
+`uv tool run flin-chatgpt-ads-mcp@latest` PyPI und lädt die neueste kompatible stabile
+Serverversion. Das Paket enthält nur den Starter; Internet und ein verfügbares
+PyPI-Release sind erforderlich. Bereits aktuelle Pakete werden aus dem Cache verwendet.
 API-Keys sind als sensible Einstellung markiert und werden nicht im Paket gespeichert.
 Die lokale Konfigurationsdatei muss bei Verwendung weiter vorhanden sein.
 
-Updates für diese Installation: eine neue `.mcpb`-Version in Claude Desktop importieren.
-`update.command` und `uv tool upgrade` betreffen separate Installationen, nicht die
-von Claude verwaltete Erweiterung.
+Einmalig die `.mcpb` ab Version 0.1.3 als Update der bestehenden Erweiterung importieren
+(nicht vorher deinstallieren). Erweiterungskennung und Einstellungsnamen bleiben gleich.
+Danach genügt ein Neustart des MCP, z. B. durch vollständiges Beenden und erneutes Öffnen
+von Claude Desktop. Laufende Sitzungen wechseln ihre Serverversion nicht im Hintergrund.
+API-Keys bleiben in Claudes Einstellungen bzw. der gewählten Konfigurationsdatei;
+der Updatevorgang schreibt diese nicht. Bei einem Netzwerkfehler kann der Start
+scheitern; nach Wiederherstellung der Verbindung neu starten.
+Die angezeigte Erweiterungsversion bezeichnet den Starter und kann daher älter als
+die laufende Serverversion sein. Nur Änderungen am Starter oder an neuen Einstellungsfeldern
+erfordern künftig nochmals eine `.mcpb`-Installation.
 
 ## Alternative macOS-Installation für andere MCP-Clients
 
-1. `flin-chatgpt-ads-mcp-0.1.2-macos.pkg` öffnen. Es legt das Installationspaket
+1. `flin-chatgpt-ads-mcp-0.1.3-macos.pkg` öffnen. Es legt das Installationspaket
    unter `/Applications/flin ChatGPT Ads MCP` ab. Alternativ die ZIP entpacken.
 2. Dort `install.command` öffnen. Benötigt **uv oder Python 3.11+** und Internet
    für Abhängigkeiten. Mit uv wird bei Bedarf Python 3.12 bereitgestellt.

@@ -2,18 +2,29 @@
   "manifest_version": "0.4",
   "name": "flin-chatgpt-ads-mcp",
   "display_name": "flin ChatGPT Ads",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "OpenAI Ads lesen und auswerten: Konten, Kampagnen, Anzeigen und Reporting.",
-  "author": {"name": "flin.agency"},
+  "author": {
+    "name": "flin.agency"
+  },
   "homepage": "https://github.com/flin-agency/flin-chatgpt-ads-mcp",
   "support": "https://github.com/flin-agency/flin-chatgpt-ads-mcp/issues",
-  "privacy_policies": ["https://openai.com/policies/privacy-policy/"],
+  "privacy_policies": [
+    "https://openai.com/policies/privacy-policy/"
+  ],
   "server": {
     "type": "uv",
     "entry_point": "desktop_server.py",
     "mcp_config": {
       "command": "uv",
-      "args": ["run", "--directory", "${__dirname}", "--locked", "--no-dev", "desktop_server.py"],
+      "args": [
+        "tool",
+        "run",
+        "--default-index",
+        "https://pypi.org/simple",
+        "flin-chatgpt-ads-mcp@latest",
+        "--desktop"
+      ],
       "env": {
         "OPENAI_ADS_API_KEY": "${user_config.api_key}",
         "FLIN_CHATGPT_ADS_CONFIG": "${user_config.config_file}"
@@ -21,8 +32,12 @@
     }
   },
   "compatibility": {
-    "platforms": ["darwin"],
-    "runtimes": {"python": ">=3.11"}
+    "platforms": [
+      "darwin"
+    ],
+    "runtimes": {
+      "python": ">=3.11"
+    }
   },
   "tools_generated": true,
   "user_config": {

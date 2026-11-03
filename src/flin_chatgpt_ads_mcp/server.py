@@ -97,10 +97,19 @@ def main():
         description="flin ChatGPT Ads MCP (read-only, stdio)"
     )
     parser.add_argument("--config", help="Path to account configuration JSON")
+    parser.add_argument(
+        "--desktop", action="store_true", help="Use Claude Desktop extension settings"
+    )
     parser.add_argument("--version", action="version", version=__version__)
     args = parser.parse_args()
     try:
-        asyncio.run(run(load_config(args.config)))
+        if args.desktop:
+            from .desktop import desktop_config
+
+            config = desktop_config()
+        else:
+            config = load_config(args.config)
+        asyncio.run(run(config))
     except ConfigError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(2) from None

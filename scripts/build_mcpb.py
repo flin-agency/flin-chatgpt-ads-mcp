@@ -15,11 +15,13 @@ def build(root: Path, output_dir: Path) -> Path:
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("manifest.json", json.dumps(manifest, indent=2) + "\n")
         archive.write(root / "desktop/desktop_server.py", "desktop_server.py")
-        for name in ("pyproject.toml", "uv.lock", "README.md"):
-            archive.write(root / name, name)
-        for path in sorted((root / "src/flin_chatgpt_ads_mcp").iterdir()):
-            if path.suffix in {".py", ".json"} and path.is_file():
-                archive.write(path, path.relative_to(root))
+        archive.writestr(
+            "pyproject.toml",
+            '[project]\nname = "flin-chatgpt-ads-launcher"\n'
+            f'version = "{metadata["version"]}"\nrequires-python = ">=3.11"\n'
+            "dependencies = []\n\n[tool.uv]\npackage = false\n",
+        )
+        archive.write(root / "README.md", "README.md")
     return output
 
 
