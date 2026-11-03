@@ -1,0 +1,44 @@
+{
+  "manifest_version": "0.4",
+  "name": "flin-chatgpt-ads-mcp",
+  "display_name": "flin ChatGPT Ads",
+  "version": "0.1.0",
+  "description": "OpenAI Ads lesen und auswerten: Konten, Kampagnen, Anzeigen und Reporting.",
+  "author": {"name": "flin.agency"},
+  "homepage": "https://github.com/flin-agency/flin-chatgpt-ads-mcp",
+  "support": "https://github.com/flin-agency/flin-chatgpt-ads-mcp/issues",
+  "privacy_policies": ["https://openai.com/policies/privacy-policy/"],
+  "server": {
+    "type": "uv",
+    "entry_point": "desktop_server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run", "--directory", "${__dirname}", "--locked", "--no-dev", "desktop_server.py"],
+      "env": {
+        "OPENAI_ADS_API_KEY": "${user_config.api_key}",
+        "FLIN_CHATGPT_ADS_CONFIG": "${user_config.config_file}"
+      }
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin"],
+    "runtimes": {"python": ">=3.11"}
+  },
+  "tools_generated": true,
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Für ein einzelnes Konto hier eintragen; für mehrere Konten stattdessen eine Konfigurationsdatei auswählen.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "config_file": {
+      "type": "file",
+      "title": "Kontokonfiguration (optional)",
+      "description": "JSON-Datei mit einzelnen API-Keys pro Kundenkonto. Eine ausgewählte Datei hat Vorrang vor dem einzelnen API-Key.",
+      "required": false
+    }
+  }
+}

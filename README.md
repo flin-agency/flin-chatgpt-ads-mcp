@@ -15,7 +15,25 @@ abgefragte Conversion-Sonderreport ist in dieser Version ausgeschlossen.
 API-Keys werden nur aus der lokalen Konfiguration gelesen, niemals als
 Werkzeugparameter angefordert. Weiterleitungen werden nicht verfolgt.
 
-## Erste Installation auf macOS
+## Claude Desktop auf macOS (.mcpb)
+
+Für Claude Desktop **`flin-chatgpt-ads-mcp-0.1.0.mcpb`** aus den GitHub-Releases laden
+und öffnen bzw. in Claude Desktop als lokale Erweiterung installieren.
+In den Erweiterungseinstellungen den **OpenAI Ads API-Key** eintragen. Für mehrere
+Kundenkonten stattdessen eine JSON-Datei wie im Abschnitt Konfiguration auswählen.
+Die ausgewählte Datei hat Vorrang; ohne Dateiauswahl wird nur der eingetragene Key genutzt.
+
+Benötigt eine aktuelle Claude-Desktop-Version mit MCPB-0.4-/UV-Unterstützung.
+Claude Desktop verwaltet Python und Abhängigkeiten; beim ersten Start ist Internet nötig.
+Das Paket enthält den Servercode und benötigt für die Erstinstallation kein PyPI-Release.
+API-Keys sind als sensible Einstellung markiert und werden nicht im Paket gespeichert.
+Die lokale Konfigurationsdatei muss bei Verwendung weiter vorhanden sein.
+
+Updates für diese Installation: eine neue `.mcpb`-Version in Claude Desktop importieren.
+`update.command` und `uv tool upgrade` betreffen separate Installationen, nicht die
+von Claude verwaltete Erweiterung.
+
+## Alternative macOS-Installation für andere MCP-Clients
 
 1. `flin-chatgpt-ads-mcp-0.1.0-macos.pkg` öffnen. Es legt das Installationspaket
    unter `/Applications/flin ChatGPT Ads MCP` ab. Alternativ die ZIP entpacken.
