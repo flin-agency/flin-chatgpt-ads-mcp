@@ -33,6 +33,29 @@ def test_desktop_requires_credentials(monkeypatch):
         module["desktop_config"]()
 
 
+def test_unresolved_optional_file_uses_api_key(monkeypatch):
+    monkeypatch.setenv("FLIN_CHATGPT_ADS_CONFIG", "${user_config.config_file}")
+    monkeypatch.setenv("OPENAI_ADS_API_KEY", "desktop-test-key")
+    module = runpy.run_path(str(ROOT / "desktop/desktop_server.py"))
+    assert module["desktop_config"]().select(None) == ("default", "desktop-test-key")
+
+
+def test_unresolved_credentials_report_setup_error(monkeypatch):
+    monkeypatch.setenv("FLIN_CHATGPT_ADS_CONFIG", "${user_config.config_file}")
+    monkeypatch.setenv("OPENAI_ADS_API_KEY", "${user_config.api_key}")
+    module = runpy.run_path(str(ROOT / "desktop/desktop_server.py"))
+    with pytest.raises(ConfigError, match="extension settings"):
+        module["desktop_config"]()
+
+
+def test_selected_missing_file_does_not_switch_accounts(tmp_path, monkeypatch):
+    monkeypatch.setenv("FLIN_CHATGPT_ADS_CONFIG", str(tmp_path / "missing.json"))
+    monkeypatch.setenv("OPENAI_ADS_API_KEY", "desktop-test-key")
+    module = runpy.run_path(str(ROOT / "desktop/desktop_server.py"))
+    with pytest.raises(ConfigError, match="Cannot open"):
+        module["desktop_config"]()
+
+
 def test_bundle_contents(tmp_path):
     import zipfile
 
@@ -57,7 +80,7 @@ async def test_desktop_entrypoint_protocol():
         env={
             **os.environ,
             "OPENAI_ADS_API_KEY": "desktop-test-key",
-            "FLIN_CHATGPT_ADS_CONFIG": "",
+            "FLIN_CHATGPT_ADS_CONFIG": "${user_config.config_file}",
         },
     )
     async with (

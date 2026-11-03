@@ -34,9 +34,15 @@ def load_config(path: str | None = None) -> Config:
     data = {}
     if explicit or location.exists():
         try:
-            data = json.loads(location.read_text())
-        except (OSError, ValueError):
-            raise ConfigError("Cannot read configuration JSON.") from None
+            data = json.loads(location.read_text(encoding="utf-8"))
+        except OSError:
+            raise ConfigError(
+                "Cannot open the selected account configuration file. Check that it exists and is readable, or clear the optional file setting to use a single API key."
+            ) from None
+        except (ValueError, UnicodeError):
+            raise ConfigError(
+                "The selected account configuration file must contain valid UTF-8 JSON. Choose a valid JSON file, or clear the optional file setting to use a single API key."
+            ) from None
     if not isinstance(data, dict) or set(data) - {"accounts", "default_account"}:
         raise ConfigError("Configuration accepts accounts and default_account only.")
     entries = data.get("accounts", {})

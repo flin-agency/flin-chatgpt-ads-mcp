@@ -2,7 +2,7 @@
   "manifest_version": "0.4",
   "name": "flin-chatgpt-ads-mcp",
   "display_name": "flin ChatGPT Ads",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OpenAI Ads lesen und auswerten: Konten, Kampagnen, Anzeigen und Reporting.",
   "author": {"name": "flin.agency"},
   "homepage": "https://github.com/flin-agency/flin-chatgpt-ads-mcp",
@@ -38,7 +38,8 @@
       "type": "file",
       "title": "Kontokonfiguration (optional)",
       "description": "JSON-Datei mit einzelnen API-Keys pro Kundenkonto. Eine ausgewählte Datei hat Vorrang vor dem einzelnen API-Key.",
-      "required": false
+      "required": false,
+      "default": ""
     }
   }
 }
