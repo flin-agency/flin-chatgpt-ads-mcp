@@ -1,21 +1,20 @@
-"""Run the reviewed server source included in this bundle."""
+"""Fallback for hosts that launch the entry point instead of mcp_config."""
 
-import asyncio
+import json
+import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
-
-from flin_chatgpt_ads_mcp.config import ConfigError
-from flin_chatgpt_ads_mcp.desktop import desktop_config
-from flin_chatgpt_ads_mcp.server import run
-
 
 def main():
+    config = json.loads(
+        (Path(__file__).resolve().parent / "manifest.json").read_text()
+    )["server"]["mcp_config"]
     try:
-        asyncio.run(run(desktop_config()))
-    except ConfigError as exc:
-        print(str(exc), file=sys.stderr)
+        # No shell and no credential arguments; inherit Claude's settings unchanged.
+        os.execvp(config["command"], [config["command"], *config["args"]])
+    except OSError:
+        print("Cannot start uv. Update Claude Desktop and restart the extension.", file=sys.stderr)
         raise SystemExit(2) from None
 
 

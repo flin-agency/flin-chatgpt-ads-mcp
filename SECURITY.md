@@ -1,7 +1,7 @@
-# Sicherheitsprüfung 0.1.4
+# Sicherheitsprüfung 0.1.5
 
 Geprüft am 6. November 2026: Servercode, Kontokonfiguration, Claude-Desktop-Starter,
-Paketinhalt, Installationsskripte, GitHub-Workflows und festgelegte Laufzeitabhängigkeiten.
+Paketinhalt, Installationsskripte, GitHub-Workflows und Laufzeitabhängigkeiten des geprüften Entwicklungsstands.
 Dies ist eine Quellcode- und automatisierte Prüfung, kein unabhängiger Penetrationstest
 und keine Garantie für die Abwesenheit aller Schwachstellen.
 
@@ -21,9 +21,17 @@ und keine Garantie für die Abwesenheit aller Schwachstellen.
   Keys werden auch in verschachtelten JSON-Antworten und Objektschlüsseln maskiert.
 - Kontonamen dürfen keine konfigurierten Keys enthalten. `list_configured_accounts`
   liefert nur Namen und Standardkonto. Der Server schreibt keine Zugangsdaten-Dateien.
-- MCPB enthält den geprüften Servercode und `uv.lock`. Keine automatische Ausführung
-  einer künftig veröffentlichten Serverversion über `@latest`. Das Laden einer
-  benachbarten `.env`-Datei ist im Starter deaktiviert.
+- Auf ausdrücklichen Wunsch aktualisiert der MCPB-Starter ab 0.1.5 bei jedem
+  MCP-Start auf die neueste kompatible stabile PyPI-Serverversion (`@latest`).
+  Der Servercode und seine Laufzeitabhängigkeiten sind im MCPB nicht festgelegt.
+  Vorabversionen werden ausgeschlossen, die Server-Metadaten bei jedem Start
+  aktualisiert und bereits separat installierte Tools ignoriert. `.env`-Dateien
+  und lokale UV-Konfigurationsdateien werden nicht geladen.
+- Kontoeinstellungen werden unverändert als Prozessumgebung weitergegeben;
+  der Starter verwendet keine Shell und schreibt keine Konfiguration.
+- Die Release-Pipeline veröffentlicht zuerst auf PyPI und prüft den Start der
+  veröffentlichten Version. Erst danach wird das macOS-Paket gebaut und hochgeladen;
+  auf macOS wird der PyPI-Starter nochmals geprüft.
 - Explizite Dateiliste für das MCPB: keine lokalen Umgebungen oder Kontodateien.
   GitHub-Actions sind auf Commit-IDs festgelegt; Tests müssen vor Paketbau und
   Veröffentlichung erfolgreich sein. Veröffentlichte Assets werden nicht automatisch
@@ -31,11 +39,16 @@ und keine Garantie für die Abwesenheit aller Schwachstellen.
 
 ## Nachweise
 
-- 96 automatisierte Tests: unter anderem alle registrierten GET-Operationen,
+- 98 automatisierte Tests: unter anderem alle registrierten GET-Operationen,
   Pfadmanipulation, Redirects, Eingabeprüfung, Antwortlimits, Zeitlimit, sichere
   Fehlermeldungen, Key-Maskierung, zehn UI-Konten und echte MCP-stdio-Verbindungen.
-- Starttest aus dem entpackten MCPB mit dem tatsächlichen Manifest-Befehl in einem
-  Pfad mit Leerzeichen, mehreren Konten und einer absichtlich vorhandenen `.env`.
+- Starttest des Release-Kandidaten als lokal gebautes Wheel durch den UV-Starter,
+  mit mehreren Konten und absichtlich vorhandener `.env`. Vor Veröffentlichung
+  wird nur die Paketquelle durch das lokale Wheel ersetzt.
+- Update-Test mit gemeinsamem Cache: neuer stabiler Release wird beim nächsten Start
+  gewählt, eine neuere Vorabversion nicht. Fallback-Starter bewahrt die Umgebung.
+- Die nachfolgenden Abhängigkeits- und Schlüssel-Scans wurden für 0.1.4 durchgeführt;
+  0.1.5 ändert keine Laufzeitabhängigkeiten. Sie prüfen keine künftigen PyPI-Versionen.
 - Manifest mit dem offiziellen Werkzeug `@anthropic-ai/mcpb` 2.1.2 validiert.
 - `pip-audit` auf den aus `uv.lock` exportierten Laufzeitabhängigkeiten:
   keine bekannten Schwachstellen zum Prüfzeitpunkt (lokale macOS/Python-Auswahl).
@@ -60,8 +73,10 @@ Garantie gegen Prompt Injection im Client.
 
 Das Paket ist nicht signiert oder Apple-notarisiert. `SHA256SUMS` prüft die
 Dateiintegrität, stellt aber keine unabhängige Herausgeber-Signatur dar. Installation
-aus dem offiziellen Repository beziehen. Die erste Einrichtung benötigt Internet
-für Python bzw. Abhängigkeiten. UV/Python, Build-Werkzeuge, Paketquellen, Claude und
+aus dem offiziellen Repository beziehen. Jeder Start benötigt eine erreichbare PyPI-Quelle. Laufende Sitzungen werden nicht
+automatisch neu gestartet. Das einmalige Starter-Update von 0.1.4 muss importiert
+werden. Künftige stabile PyPI-Releases werden ohne erneuten MCPB-Import ausgeführt;
+diese Prüfung kann deren Sicherheit nicht vorwegnehmen. UV/Python, Build-Werkzeuge, Paketquellen, Claude und
 die OpenAI Ads API bleiben externe Vertrauensgrenzen.
 
 Es wurden keine echten Werbekonten abgefragt und keine Keys in Claude hinterlegt.

@@ -63,16 +63,20 @@ def test_bundle_contents(tmp_path):
     path = build(ROOT, tmp_path)
     with zipfile.ZipFile(path) as archive:
         names = archive.namelist()
-        assert "uv.lock" in names
-        assert "src/flin_chatgpt_ads_mcp/server.py" in names
+        assert "uv.lock" not in names
+        assert not any(n.startswith("src/") for n in names)
         assert not any(".venv" in n or n.endswith("config.json") for n in names)
         manifest = json.loads(archive.read("manifest.json"))
         assert manifest["server"]["type"] == "uv"
         args = manifest["server"]["mcp_config"]["args"]
-        assert args[0] == "run"
-        assert "--locked" in args
+        assert args[:2] == ["tool", "run"]
+        assert "--isolated" in args
+        assert "--no-config" in args
+        assert args[args.index("--prerelease") + 1] == "disallow"
+        assert args[args.index("--refresh-package") + 1] == "flin-chatgpt-ads-mcp"
         assert "--no-env-file" in args
-        assert not any("latest" in arg for arg in args)
+        assert "flin-chatgpt-ads-mcp@latest" in args
+        assert args[-1] == "--desktop"
         assert manifest["name"] == "flin-chatgpt-ads-mcp"
         for number in range(1, 11):
             suffix = "" if number == 1 else f"_{number}"
@@ -160,7 +164,9 @@ async def test_desktop_entrypoint_protocol():
 
 
 async def test_extracted_bundle_stdio(tmp_path):
-    """Exercise the manifest's actual launch command outside the source checkout."""
+    """Launch the candidate wheel through uv before it is published to PyPI."""
+    import asyncio
+    import subprocess
     import zipfile
 
     build = runpy.run_path(str(ROOT / "scripts/build_mcpb.py"))["build"]
@@ -176,9 +182,18 @@ async def test_extracted_bundle_stdio(tmp_path):
                 "OPENAI_ADS_API_KEY_10": "fake-bundle-beta", "FLIN_ADS_ACCOUNT_NAME_10": "beta"})
     # The launcher must not import credentials from an adjacent .env file.
     (extracted / ".env").write_text("FLIN_ADS_DEFAULT_ACCOUNT=alpha\n")
+    wheel_dir = tmp_path / "wheels"
+    await asyncio.to_thread(
+        subprocess.run, ["uv", "build", "--wheel", "--out-dir", str(wheel_dir), str(ROOT)], check=True
+    )
+    wheel = next(wheel_dir.glob("*.whl"))
+    args = list(config["args"])
+    package_index = args.index("flin-chatgpt-ads-mcp@latest")
+    args[package_index:package_index + 1] = ["--from", str(wheel), "flin-chatgpt-ads-mcp"]
     params = StdioServerParameters(
         command=config["command"],
-        args=[arg.replace("${__dirname}", str(extracted)) for arg in config["args"]],
+        args=args,
+        cwd=str(extracted),
         env=env,
     )
     async with (
@@ -192,3 +207,51 @@ async def test_extracted_bundle_stdio(tmp_path):
         ambiguous = await session.call_tool("get_ad_account", {})
         assert ambiguous.isError
         assert "fake-bundle" not in str(result)
+
+
+def test_fallback_uses_same_command_and_preserves_credentials(monkeypatch):
+    monkeypatch.setenv("OPENAI_ADS_API_KEY_10", "unchanged-test-key")
+    monkeypatch.setenv("FLIN_ADS_ACCOUNT_NAME_10", "client_ten")
+    monkeypatch.setenv("FLIN_CHATGPT_ADS_CONFIG", "/path/to/accounts.json")
+    before = dict(os.environ)
+    calls = []
+    monkeypatch.setattr(os, "execvp", lambda command, args: calls.append((command, args)))
+    module = runpy.run_path(str(ROOT / "desktop/desktop_server.py"))
+    module["main"]()
+    config = json.loads((ROOT / "desktop/manifest.json").read_text())["server"]["mcp_config"]
+    assert calls == [(config["command"], [config["command"], *config["args"]])]
+    assert dict(os.environ) == before
+    assert "unchanged-test-key" not in str(calls)
+
+
+def test_launcher_refreshes_cached_version_and_excludes_prereleases(tmp_path):
+    """A local wheel source simulates new releases without publishing test packages."""
+    import subprocess
+    import zipfile
+
+    wheel_dir = tmp_path / "index"
+    wheel_dir.mkdir()
+
+    def publish(version):
+        dist = f"flin_chatgpt_ads_mcp-{version}.dist-info"
+        with zipfile.ZipFile(wheel_dir / f"flin_chatgpt_ads_mcp-{version}-py3-none-any.whl", "w") as wheel:
+            wheel.writestr("test_launcher_probe.py", f'def main():\n    print("{version}")\n')
+            wheel.writestr(dist + "/METADATA", f"Metadata-Version: 2.1\nName: flin-chatgpt-ads-mcp\nVersion: {version}\n")
+            wheel.writestr(dist + "/WHEEL", "Wheel-Version: 1.0\nGenerator: test\nRoot-Is-Purelib: true\nTag: py3-none-any\n")
+            wheel.writestr(dist + "/entry_points.txt", "[console_scripts]\nflin-chatgpt-ads-mcp = test_launcher_probe:main\n")
+            wheel.writestr(dist + "/RECORD", "")
+
+    config = json.loads((ROOT / "desktop/manifest.json").read_text())["server"]["mcp_config"]
+    args = list(config["args"])
+    args[2:2] = ["--no-index", "--find-links", str(wheel_dir), "--cache-dir", str(tmp_path / "cache")]
+
+    def launch():
+        result = subprocess.run([config["command"], *args], capture_output=True, text=True, timeout=30, check=True)
+        return result.stdout.strip()
+
+    publish("9.0.0")
+    assert launch() == "9.0.0"
+    publish("9.0.1")
+    publish("9.1.0rc1")
+    assert launch() == "9.0.1"
+    assert launch() == "9.0.1"

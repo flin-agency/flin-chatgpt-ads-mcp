@@ -2,7 +2,7 @@
   "manifest_version": "0.4",
   "name": "flin-chatgpt-ads-mcp",
   "display_name": "flin ChatGPT Ads",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "OpenAI Ads lesen und auswerten: Konten, Kampagnen, Anzeigen und Reporting.",
   "author": {
     "name": "flin.agency"
@@ -18,14 +18,19 @@
     "mcp_config": {
       "command": "uv",
       "args": [
+        "tool",
         "run",
-        "--directory",
-        "${__dirname}",
-        "--locked",
-        "--no-dev",
+        "--isolated",
+        "--no-config",
         "--no-env-file",
-        "python",
-        "${__dirname}/desktop_server.py"
+        "--default-index",
+        "https://pypi.org/simple",
+        "--prerelease",
+        "disallow",
+        "--refresh-package",
+        "flin-chatgpt-ads-mcp",
+        "flin-chatgpt-ads-mcp@latest",
+        "--desktop"
       ],
       "env": {
         "OPENAI_ADS_API_KEY": "${user_config.api_key}",

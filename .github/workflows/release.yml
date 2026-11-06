@@ -26,3 +26,12 @@ jobs:
       - run: uv run ruff check .
       - run: uv build
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1
+      - name: Verify published version through desktop auto-updater
+        run: python scripts/verify_pypi.py
+  macos:
+    needs: publish
+    permissions:
+      contents: write
+    uses: ./.github/workflows/macos.yml
+    with:
+      release_tag: ${{ github.event.release.tag_name || '' }}

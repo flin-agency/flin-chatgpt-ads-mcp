@@ -1,8 +1,12 @@
 name: macOS package
 on:
   workflow_dispatch:
-  release:
-    types: [published]
+  workflow_call:
+    inputs:
+      release_tag:
+        type: string
+        required: false
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -16,13 +20,16 @@ jobs:
         with:
           python-version: '3.12'
       - name: Check release tag matches package version
-        if: github.event_name == 'release'
+        if: inputs.release_tag != ''
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: python -c 'import os, tomllib; version = tomllib.load(open("pyproject.toml", "rb"))["project"]["version"]; assert os.environ["RELEASE_TAG"] == "v" + version, "Release tag/version mismatch"'
       - run: uv sync --extra dev --locked
       - run: uv run ruff check .
       - run: uv run pytest
+      - name: Verify PyPI auto-update on macOS
+        if: inputs.release_tag != ''
+        run: python scripts/verify_pypi.py
       - run: bash scripts/build_macos.sh
       - run: uv run python scripts/build_mcpb.py
       - run: cd dist && shasum -a 256 ./*.mcpb >> SHA256SUMS
@@ -30,8 +37,8 @@ jobs:
         with:
           name: flin-chatgpt-ads-mcp-macos
           path: dist/
-      - if: github.event_name == 'release'
+      - if: inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: gh release upload "$RELEASE_TAG" dist/*.pkg dist/*.zip dist/*.mcpb dist/SHA256SUMS

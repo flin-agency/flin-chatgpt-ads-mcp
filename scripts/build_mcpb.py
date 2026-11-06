@@ -1,4 +1,4 @@
-"""Build a source-only Claude Desktop bundle without credentials or local environments."""
+"""Build a Claude Desktop auto-update launcher without credentials."""
 
 import json
 import tomllib
@@ -16,15 +16,13 @@ def build(root: Path, output_dir: Path) -> Path:
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("manifest.json", json.dumps(manifest, indent=2) + "\n")
         archive.write(root / "desktop/desktop_server.py", "desktop_server.py")
-        for name in ("pyproject.toml", "uv.lock"):
-            archive.write(root / name, name)
-        # An explicit allowlist keeps local keys, environments and stray files out.
-        for name in (
-            "__init__.py", "client.py", "config.py", "desktop.py", "insights.py",
-            "server.py", "operations.json",
-        ):
-            path = Path("src/flin_chatgpt_ads_mcp") / name
-            archive.write(root / path, str(path))
+        # The host needs no server dependencies to run this fallback launcher.
+        archive.writestr(
+            "pyproject.toml",
+            '[project]\nname = "flin-chatgpt-ads-launcher"\n'
+            f'version = "{metadata["version"]}"\nrequires-python = ">=3.11"\n'
+            "dependencies = []\n\n[tool.uv]\npackage = false\n",
+        )
         archive.write(root / "README.md", "README.md")
         archive.write(root / "SECURITY.md", "SECURITY.md")
     return output

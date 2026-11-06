@@ -1,7 +1,7 @@
 # flin ChatGPT Ads MCP
 
 Read-only MCP für die **OpenAI Advertiser API**, mit separaten API-Keys pro Kundenkonto.
-Python 3.11+, MCP über stdio. Version 0.1.4.
+Python 3.11+, MCP über stdio. Version 0.1.5.
 
 ## Funktionen
 
@@ -17,7 +17,7 @@ Werkzeugparameter angefordert. Weiterleitungen werden nicht verfolgt.
 
 ## Claude Desktop auf macOS (.mcpb)
 
-1. **[flin-chatgpt-ads-mcp-0.1.4.mcpb herunterladen](https://github.com/flin-agency/flin-chatgpt-ads-mcp/releases/download/v0.1.4/flin-chatgpt-ads-mcp-0.1.4.mcpb)**.
+1. **[flin-chatgpt-ads-mcp-0.1.5.mcpb herunterladen](https://github.com/flin-agency/flin-chatgpt-ads-mcp/releases/download/v0.1.5/flin-chatgpt-ads-mcp-0.1.5.mcpb)**.
 2. In Claude Desktop unter **Einstellungen → Erweiterungen → Erweiterung installieren**
    die Datei auswählen (je nach Version auch per Doppelklick).
 3. In den Erweiterungseinstellungen für **Konto 1 bis Konto 10** jeweils den Namen
@@ -36,23 +36,32 @@ möglich. Wird eine Datei ausgewählt, hat sie Vorrang vor **allen** UI-Konten. 
 fehlerhaften Datei wird nicht unbemerkt auf andere Konten umgeschaltet.
 
 Benötigt eine aktuelle Claude-Desktop-Version mit MCPB-0.4-/UV-Unterstützung.
-Claude Desktop verwaltet Python und Abhängigkeiten; bei der ersten Einrichtung ist
-Internet erforderlich. Intel und Apple Silicon werden unterstützt. Das Paket enthält
-den Servercode dieser Version und ein Lockfile mit festen Laufzeitabhängigkeiten und
-Prüfsummen. Es lädt beim Start keine neue Serverversion von PyPI.
+Claude Desktop verwaltet Python und Abhängigkeiten. Das Paket enthält einen kleinen
+Starter. **Bei jedem MCP-Start wird die neueste kompatible stabile Serverversion
+von PyPI geladen.** Bereits vorhandene Pakete werden aus dem Cache verwendet;
+der Server-Versionsstand wird trotzdem neu geprüft. Vorabversionen werden ausgeschlossen.
+Internet und eine erreichbare PyPI-Veröffentlichung sind für den Start erforderlich.
+Bei Netzwerkfehlern kann der Start scheitern; nach Wiederherstellung neu starten.
 
-Für Updates die neue `.mcpb` als Update der bestehenden Erweiterung importieren und
-Claude Desktop neu starten. Erweiterungskennung und die bisherigen Einstellungen
-`api_key` und `config_file` bleiben erhalten. **Auch beim Wechsel von 0.1.3 auf 0.1.4
-ist dieser Import nötig**, damit die neuen Kontofelder erscheinen. Künftige
-Serverupdates erfolgen bewusst durch Installation eines neuen Pakets.
+**Einmalig die `.mcpb` ab Version 0.1.5 als Update importieren**, auch wenn bereits
+0.1.4 installiert ist. Danach genügt bei neuen PyPI-Versionen ein vollständiges
+Beenden und erneutes Öffnen von Claude Desktop bzw. ein Neustart der Erweiterung.
+Eine laufende Sitzung wechselt ihre Serverversion nicht im Hintergrund.
+Erweiterungskennung und alle zehn Konto-/Key-Felder bleiben erhalten; der Starter
+ändert keine Zugangsdaten oder Konfigurationsdateien.
+
+Die angezeigte Erweiterungsversion bezeichnet den Starter und kann deshalb älter
+sein als die laufende Serverversion. Änderungen an den UI-Feldern oder am Starter
+benötigen weiterhin einen neuen `.mcpb`-Import; normale Serverupdates nicht.
+Diese automatische Aktualisierung ersetzt die feste Serverversion aus 0.1.4 und
+vertraut künftigen stabilen Veröffentlichungen des Projekts auf PyPI.
 
 Das Paket ist nicht signiert. Die Datei `SHA256SUMS` im Release ermöglicht die
 Integritätsprüfung. Prüfumfang und Grenzen stehen in [SECURITY.md](SECURITY.md).
 
 ## Alternative macOS-Installation für andere MCP-Clients
 
-1. `flin-chatgpt-ads-mcp-0.1.4-macos.pkg` öffnen. Es legt das Installationspaket
+1. `flin-chatgpt-ads-mcp-0.1.5-macos.pkg` öffnen. Es legt das Installationspaket
    unter `/Applications/flin ChatGPT Ads MCP` ab. Alternativ die ZIP entpacken.
 2. Dort `install.command` öffnen. Benötigt **uv oder Python 3.11+** und Internet
    für Abhängigkeiten. Mit uv wird bei Bedarf Python 3.12 bereitgestellt.
@@ -126,8 +135,9 @@ PyPI Trusted Publisher einrichten:
 | Workflow | `release.yml` |
 | Environment | `pypi` |
 
-Das GitHub-Environment `pypi` ebenfalls anlegen. Releases lösen Tests, PyPI-Publishing
-und macOS-Paketbau aus. Version in `pyproject.toml` und `__init__.py` erhöhen,
+Das GitHub-Environment `pypi` ebenfalls anlegen. Releases lösen Tests und PyPI-Publishing
+aus. Erst nach erfolgreichem PyPI-Publishing und einem echten Starttest der neuesten
+PyPI-Version werden die macOS-Pakete gebaut und an das Release angehängt. Version in `pyproject.toml`, `desktop/manifest.json` und `__init__.py` erhöhen,
 Lockfile aktualisieren, dann Release mit passendem `vX.Y.Z`-Tag erstellen.
 Ein PyPI-API-Token wird durch Trusted Publishing nicht benötigt.
 
