@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -10,10 +11,31 @@ class ConfigError(ValueError):
     pass
 
 
+def validate_key(key):
+    # HTTP header values must be printable ASCII, never control characters.
+    if not isinstance(key, str) or not key or not all(33 <= ord(c) <= 126 for c in key):
+        raise ConfigError("An account API key is missing or invalid.")
+    return key
+
+
 @dataclass(repr=False)
 class Config:
     accounts: dict[str, str] = field(repr=False)
     default_account: str | None = None
+
+    def __post_init__(self):
+        for key in self.accounts.values():
+            validate_key(key)
+        for alias in self.accounts:
+            if not isinstance(alias, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", alias):
+                raise ConfigError("Account names must use 1–64 letters, numbers, underscores or hyphens.")
+            if any(secret in alias for secret in self.accounts.values()):
+                raise ConfigError("Account names must not contain API keys.")
+        if self.default_account is not None and (
+            not isinstance(self.default_account, str)
+            or self.default_account not in self.accounts
+        ):
+            raise ConfigError("default_account must reference a configured account.")
 
     def select(self, alias: str | None) -> tuple[str, str]:
         selected = alias or self.default_account
@@ -37,11 +59,11 @@ def load_config(path: str | None = None) -> Config:
             data = json.loads(location.read_text(encoding="utf-8"))
         except OSError:
             raise ConfigError(
-                "Cannot open the selected account configuration file. Check that it exists and is readable, or clear the optional file setting to use a single API key."
+                "Cannot open the selected account configuration file. Check that it exists and is readable, or clear the optional file setting to use API keys from extension settings."
             ) from None
-        except (ValueError, UnicodeError):
+        except (ValueError, UnicodeError, RecursionError):
             raise ConfigError(
-                "The selected account configuration file must contain valid UTF-8 JSON. Choose a valid JSON file, or clear the optional file setting to use a single API key."
+                "The selected account configuration file must contain valid UTF-8 JSON. Choose a valid JSON file, or clear the optional file setting to use API keys from extension settings."
             ) from None
     if not isinstance(data, dict) or set(data) - {"accounts", "default_account"}:
         raise ConfigError("Configuration accepts accounts and default_account only.")
@@ -61,17 +83,16 @@ def load_config(path: str | None = None) -> Config:
                 "Each account requires exactly one of api_key or api_key_env."
             )
         env_name = entry.get("api_key_env")
-        if env_name is not None and not isinstance(env_name, str):
+        if "api_key_env" in entry and (
+            not isinstance(env_name, str)
+            or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", env_name)
+        ):
             raise ConfigError("api_key_env must name an environment variable.")
         key = os.getenv(env_name, "") if env_name else entry.get("api_key")
-        if not isinstance(key, str) or not key.strip() or any(c.isspace() for c in key):
-            raise ConfigError("An account API key is missing or invalid.")
-        accounts[alias] = key
-    if not accounts and os.getenv("OPENAI_ADS_API_KEY"):
+        accounts[alias] = validate_key(key)
+    if not explicit and not location.exists() and os.getenv("OPENAI_ADS_API_KEY"):
         key = os.environ["OPENAI_ADS_API_KEY"]
-        if any(c.isspace() for c in key):
-            raise ConfigError("OPENAI_ADS_API_KEY contains whitespace.")
-        accounts["default"] = key
+        accounts["default"] = validate_key(key)
     default = data.get("default_account")
     if default is not None and (
         not isinstance(default, str) or default not in accounts

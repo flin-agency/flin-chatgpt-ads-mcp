@@ -2,7 +2,7 @@
   "manifest_version": "0.4",
   "name": "flin-chatgpt-ads-mcp",
   "display_name": "flin ChatGPT Ads",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "OpenAI Ads lesen und auswerten: Konten, Kampagnen, Anzeigen und Reporting.",
   "author": {
     "name": "flin.agency"
@@ -18,16 +18,38 @@
     "mcp_config": {
       "command": "uv",
       "args": [
-        "tool",
         "run",
-        "--default-index",
-        "https://pypi.org/simple",
-        "flin-chatgpt-ads-mcp@latest",
-        "--desktop"
+        "--directory",
+        "${__dirname}",
+        "--locked",
+        "--no-dev",
+        "--no-env-file",
+        "python",
+        "${__dirname}/desktop_server.py"
       ],
       "env": {
         "OPENAI_ADS_API_KEY": "${user_config.api_key}",
-        "FLIN_CHATGPT_ADS_CONFIG": "${user_config.config_file}"
+        "FLIN_CHATGPT_ADS_CONFIG": "${user_config.config_file}",
+        "FLIN_ADS_ACCOUNT_NAME": "${user_config.account_name}",
+        "FLIN_ADS_ACCOUNT_NAME_2": "${user_config.account_name_2}",
+        "OPENAI_ADS_API_KEY_2": "${user_config.api_key_2}",
+        "FLIN_ADS_ACCOUNT_NAME_3": "${user_config.account_name_3}",
+        "OPENAI_ADS_API_KEY_3": "${user_config.api_key_3}",
+        "FLIN_ADS_ACCOUNT_NAME_4": "${user_config.account_name_4}",
+        "OPENAI_ADS_API_KEY_4": "${user_config.api_key_4}",
+        "FLIN_ADS_ACCOUNT_NAME_5": "${user_config.account_name_5}",
+        "OPENAI_ADS_API_KEY_5": "${user_config.api_key_5}",
+        "FLIN_ADS_ACCOUNT_NAME_6": "${user_config.account_name_6}",
+        "OPENAI_ADS_API_KEY_6": "${user_config.api_key_6}",
+        "FLIN_ADS_ACCOUNT_NAME_7": "${user_config.account_name_7}",
+        "OPENAI_ADS_API_KEY_7": "${user_config.api_key_7}",
+        "FLIN_ADS_ACCOUNT_NAME_8": "${user_config.account_name_8}",
+        "OPENAI_ADS_API_KEY_8": "${user_config.api_key_8}",
+        "FLIN_ADS_ACCOUNT_NAME_9": "${user_config.account_name_9}",
+        "OPENAI_ADS_API_KEY_9": "${user_config.api_key_9}",
+        "FLIN_ADS_ACCOUNT_NAME_10": "${user_config.account_name_10}",
+        "OPENAI_ADS_API_KEY_10": "${user_config.api_key_10}",
+        "FLIN_ADS_DEFAULT_ACCOUNT": "${user_config.default_account}"
       }
     }
   },
@@ -41,18 +63,167 @@
   },
   "tools_generated": true,
   "user_config": {
+    "account_name": {
+      "type": "string",
+      "title": "Konto 1: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: default. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
     "api_key": {
       "type": "string",
-      "title": "OpenAI Ads API-Key",
-      "description": "Advertiser API-Key aus dem Ads Manager. Für ein einzelnes Konto hier eintragen; für mehrere Konten stattdessen eine Konfigurationsdatei auswählen.",
+      "title": "Konto 1: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
       "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_2": {
+      "type": "string",
+      "title": "Konto 2: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_2. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_2": {
+      "type": "string",
+      "title": "Konto 2: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_3": {
+      "type": "string",
+      "title": "Konto 3: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_3. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_3": {
+      "type": "string",
+      "title": "Konto 3: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_4": {
+      "type": "string",
+      "title": "Konto 4: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_4. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_4": {
+      "type": "string",
+      "title": "Konto 4: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_5": {
+      "type": "string",
+      "title": "Konto 5: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_5. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_5": {
+      "type": "string",
+      "title": "Konto 5: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_6": {
+      "type": "string",
+      "title": "Konto 6: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_6. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_6": {
+      "type": "string",
+      "title": "Konto 6: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_7": {
+      "type": "string",
+      "title": "Konto 7: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_7. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_7": {
+      "type": "string",
+      "title": "Konto 7: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_8": {
+      "type": "string",
+      "title": "Konto 8: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_8. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_8": {
+      "type": "string",
+      "title": "Konto 8: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_9": {
+      "type": "string",
+      "title": "Konto 9: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_9. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_9": {
+      "type": "string",
+      "title": "Konto 9: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "account_name_10": {
+      "type": "string",
+      "title": "Konto 10: Name",
+      "description": "Optionaler eindeutiger Name (Buchstaben, Zahlen, _ oder -). Ohne Name: konto_10. Hier keinen API-Key eingeben.",
+      "required": false,
+      "default": ""
+    },
+    "api_key_10": {
+      "type": "string",
+      "title": "Konto 10: OpenAI Ads API-Key",
+      "description": "Advertiser API-Key aus dem Ads Manager. Leer lassen, wenn dieses Konto nicht genutzt wird.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "default_account": {
+      "type": "string",
+      "title": "Standardkonto (optional)",
+      "description": "Name eines konfigurierten Kontos. Leer lassen, um bei mehreren Konten jedes Mal ausdrücklich ein Konto auszuwählen.",
       "required": false,
       "default": ""
     },
     "config_file": {
       "type": "file",
       "title": "Kontokonfiguration (optional)",
-      "description": "JSON-Datei mit einzelnen API-Keys pro Kundenkonto. Eine ausgewählte Datei hat Vorrang vor dem einzelnen API-Key.",
+      "description": "Nur für bestehende oder grössere Konfigurationen. Hat Vorrang vor allen UI-Konten. Für bis zu zehn Konten ist keine Datei nötig.",
       "required": false,
       "default": ""
     }

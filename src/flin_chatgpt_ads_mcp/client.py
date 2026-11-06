@@ -14,10 +14,24 @@ from .insights import describe_insights, normalize_insights
 OPERATIONS = json.loads(files(__package__).joinpath("operations.json").read_text())
 describe_insights(OPERATIONS)
 BASE_URL = "https://api.ads.openai.com/v1"
+MAX_RESPONSE_BYTES = 10 * 1024 * 1024
+MAX_REQUEST_SECONDS = 100
 
 
 class AdsError(ValueError):
     pass
+
+
+def redact(value, secrets):
+    if isinstance(value, str):
+        for secret in sorted(secrets, key=len, reverse=True):
+            value = value.replace(secret, "[REDACTED]")
+        return value
+    if isinstance(value, list):
+        return [redact(item, secrets) for item in value]
+    if isinstance(value, dict):
+        return {redact(key, secrets): redact(item, secrets) for key, item in value.items()}
+    return value
 
 
 class AdsClient:
@@ -26,6 +40,14 @@ class AdsClient:
         self.transport = transport
 
     async def call(self, name: str, arguments: dict):
+        # Bound the whole exchange, including retries and slowly streamed bodies.
+        try:
+            async with asyncio.timeout(MAX_REQUEST_SECONDS):
+                return await self._call(name, arguments)
+        except TimeoutError:
+            raise AdsError("Ads API request timed out; please retry.") from None
+
+    async def _call(self, name: str, arguments: dict):
         if name not in OPERATIONS:
             raise AdsError("Unknown or unsupported read-only operation.")
         op = OPERATIONS[name]
@@ -35,6 +57,8 @@ class AdsClient:
             raise AdsError("Invalid tool arguments. Check the tool input schema.")
         try:
             arguments = normalize_insights(name, arguments)
+        except RecursionError:
+            raise AdsError("Invalid report arguments: JSON nesting is too deep.") from None
         except ValueError as exc:
             raise AdsError(str(exc)) from None
         alias, key = self.config.select(arguments.get("account"))
@@ -71,14 +95,22 @@ class AdsClient:
         ) as client:
             for attempt in range(3):
                 try:
-                    response = await client.get(BASE_URL + path, params=params)
+                    async with client.stream("GET", BASE_URL + path, params=params) as response:
+                        body = bytearray()
+                        if 200 <= response.status_code < 300:
+                            async for chunk in response.aiter_bytes():
+                                if len(body) + len(chunk) > MAX_RESPONSE_BYTES:
+                                    raise AdsError("Ads API response too large. Request a smaller page or date range.")
+                                body.extend(chunk)
                 except httpx.HTTPError:
                     raise AdsError(
                         "Ads API network request failed; please retry."
                     ) from None
                 if response.status_code in (429, 502, 503, 504) and attempt < 2:
                     delay = response.headers.get("Retry-After", "")
-                    if delay.isdigit() and int(delay) > 10:
+                    if delay and (not delay.isascii() or not delay.isdigit() or len(delay) > 2):
+                        break
+                    if delay and int(delay) > 10:
                         break
                     await asyncio.sleep(int(delay) if delay.isdigit() else 2**attempt)
                     continue
@@ -93,11 +125,8 @@ class AdsClient:
                 f"Ads API HTTP {response.status_code}. {hints.get(response.status_code, 'Request failed. Check parameters and account availability.')}"
             )
         try:
-            result = response.json()
-        except ValueError:
+            result = json.loads(body)
+            result = redact(result, tuple(self.config.accounts.values()))
+        except (ValueError, UnicodeError, RecursionError):
             raise AdsError("Ads API returned an invalid JSON response.") from None
-        # Never expose a configured key, even if an upstream response echoes it.
-        encoded = json.dumps(result, ensure_ascii=False)
-        for secret in self.config.accounts.values():
-            encoded = encoded.replace(json.dumps(secret)[1:-1], "[REDACTED]")
-        return {"account": alias, "result": json.loads(encoded)}
+        return {"account": alias, "result": result}

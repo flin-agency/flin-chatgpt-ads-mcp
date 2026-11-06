@@ -145,3 +145,79 @@ async def test_every_registered_operation_uses_get(config, name):
         return httpx.Response(200, json={"ok": True})
 
     await AdsClient(config, httpx.MockTransport(handler)).call(name, args)
+
+
+async def test_nested_and_escaped_secrets_are_redacted():
+    key = 'secret-"-\\-key'
+    config = Config({"alpha": key, "beta": "other-key"})
+    transport = httpx.MockTransport(lambda r: httpx.Response(
+        200, json={key: [{"echo": key + " other-key"}], "number": 123, "empty": None}
+    ))
+    result = await AdsClient(config, transport).call("get_ad_account", {"account": "alpha"})
+    assert result["result"] == {"[REDACTED]": [{"echo": "[REDACTED] [REDACTED]"}], "number": 123, "empty": None}
+
+
+async def test_large_response_is_rejected(config, monkeypatch):
+    monkeypatch.setattr("flin_chatgpt_ads_mcp.client.MAX_RESPONSE_BYTES", 32)
+    transport = httpx.MockTransport(lambda r: httpx.Response(200, content=b"x" * 33))
+    with pytest.raises(AdsError, match="too large"):
+        await AdsClient(config, transport).call("get_ad_account", {"account": "alpha"})
+
+
+@pytest.mark.parametrize("body", [b"secret-alpha-key", b'"\xff"', b"[" * 2000 + b"]" * 2000])
+async def test_invalid_json_is_safe(config, body):
+    transport = httpx.MockTransport(lambda r: httpx.Response(200, content=body))
+    with pytest.raises(AdsError, match="invalid JSON") as error:
+        await AdsClient(config, transport).call("get_ad_account", {"account": "alpha"})
+    assert "secret-alpha-key" not in str(error.value)
+
+
+@pytest.mark.parametrize("delay", ["999999999999999", "²", "11", "tomorrow", "-1"])
+async def test_invalid_retry_delay_is_bounded(config, delay):
+    calls = []
+
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(429, headers={"Retry-After": delay.encode("utf-8")})
+
+    with pytest.raises(AdsError, match="429"):
+        await AdsClient(config, httpx.MockTransport(handler)).call("get_ad_account", {"account": "alpha"})
+    assert len(calls) == 1
+
+
+async def test_network_errors_hide_credentials(config):
+    def handler(request):
+        raise httpx.ConnectError("secret-alpha-key", request=request)
+
+    with pytest.raises(AdsError) as error:
+        await AdsClient(config, httpx.MockTransport(handler)).call("get_ad_account", {"account": "alpha"})
+    assert "secret-alpha-key" not in str(error.value)
+
+
+async def test_overall_deadline(config, monkeypatch):
+    import asyncio
+
+    monkeypatch.setattr("flin_chatgpt_ads_mcp.client.MAX_REQUEST_SECONDS", 0.01)
+
+    async def handler(request):
+        await asyncio.sleep(1)
+        pytest.fail("Deadline did not cancel request")
+
+    with pytest.raises(AdsError, match="timed out"):
+        await AdsClient(config, httpx.MockTransport(handler)).call("get_ad_account", {"account": "alpha"})
+
+
+async def test_environment_proxy_is_ignored(config, monkeypatch):
+    original = httpx.AsyncClient
+    seen = []
+
+    def client(**kwargs):
+        seen.append(kwargs)
+        return original(**kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", client)
+    monkeypatch.setenv("HTTPS_PROXY", "http://untrusted.invalid:8080")
+    transport = httpx.MockTransport(lambda r: httpx.Response(200, json={}))
+    await AdsClient(config, transport).call("get_ad_account", {"account": "alpha"})
+    assert seen[0]["trust_env"] is False
+    assert seen[0]["follow_redirects"] is False
