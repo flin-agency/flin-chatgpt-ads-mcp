@@ -75,7 +75,9 @@ def test_bundle_contents(tmp_path):
         assert args[args.index("--prerelease") + 1] == "disallow"
         assert args[args.index("--refresh-package") + 1] == "flin-chatgpt-ads-mcp"
         assert "--no-env-file" in args
-        assert "flin-chatgpt-ads-mcp@latest" in args
+        assert args[args.index("--from") + 1] == "flin-chatgpt-ads-mcp>=0.1.6,<0.2"
+        assert args[-2] == "flin-chatgpt-ads-mcp"
+        assert (tmp_path / "flin-chatgpt-ads-mcp.mcpb").read_bytes() == path.read_bytes()
         assert args[-1] == "--desktop"
         assert manifest["name"] == "flin-chatgpt-ads-mcp"
         for number in range(1, 11):
@@ -157,7 +159,7 @@ async def test_desktop_entrypoint_protocol():
         ClientSession(read, write) as session,
     ):
         await session.initialize()
-        assert len((await session.list_tools()).tools) == 21
+        assert len((await session.list_tools()).tools) == 22
         result = await session.call_tool("list_configured_accounts", {})
         assert "default" in result.content[0].text
         assert "desktop-test-key" not in result.content[0].text
@@ -188,8 +190,7 @@ async def test_extracted_bundle_stdio(tmp_path):
     )
     wheel = next(wheel_dir.glob("*.whl"))
     args = list(config["args"])
-    package_index = args.index("flin-chatgpt-ads-mcp@latest")
-    args[package_index:package_index + 1] = ["--from", str(wheel), "flin-chatgpt-ads-mcp"]
+    args[args.index("--from") + 1] = str(wheel)
     params = StdioServerParameters(
         command=config["command"],
         args=args,
@@ -207,6 +208,12 @@ async def test_extracted_bundle_stdio(tmp_path):
         ambiguous = await session.call_tool("get_ad_account", {})
         assert ambiguous.isError
         assert "fake-bundle" not in str(result)
+        status = await session.call_tool("connection_status", {})
+        state = json.loads(status.content[0].text)
+        assert state["server_version"] == manifest["version"]
+        assert state["configuration_status"] == "configured"
+        assert state["auth_status"] == "unknown"
+        assert state["live_access"] == "not_checked"
 
 
 def test_fallback_uses_same_command_and_preserves_credentials(monkeypatch):
@@ -235,7 +242,7 @@ def test_launcher_refreshes_cached_version_and_excludes_prereleases(tmp_path):
     def publish(version):
         dist = f"flin_chatgpt_ads_mcp-{version}.dist-info"
         with zipfile.ZipFile(wheel_dir / f"flin_chatgpt_ads_mcp-{version}-py3-none-any.whl", "w") as wheel:
-            wheel.writestr("test_launcher_probe.py", f'def main():\n    print("{version}")\n')
+            wheel.writestr("test_launcher_probe.py", 'import json, os\ndef main():\n    print(json.dumps({"version": "' + version + '", "settings": {k: os.getenv(k) for k in ("OPENAI_ADS_API_KEY", "OPENAI_ADS_API_KEY_10", "FLIN_ADS_ACCOUNT_NAME_10", "FLIN_CHATGPT_ADS_CONFIG")}}))\n')
             wheel.writestr(dist + "/METADATA", f"Metadata-Version: 2.1\nName: flin-chatgpt-ads-mcp\nVersion: {version}\n")
             wheel.writestr(dist + "/WHEEL", "Wheel-Version: 1.0\nGenerator: test\nRoot-Is-Purelib: true\nTag: py3-none-any\n")
             wheel.writestr(dist + "/entry_points.txt", "[console_scripts]\nflin-chatgpt-ads-mcp = test_launcher_probe:main\n")
@@ -245,13 +252,25 @@ def test_launcher_refreshes_cached_version_and_excludes_prereleases(tmp_path):
     args = list(config["args"])
     args[2:2] = ["--no-index", "--find-links", str(wheel_dir), "--cache-dir", str(tmp_path / "cache")]
 
-    def launch():
-        result = subprocess.run([config["command"], *args], capture_output=True, text=True, timeout=30, check=True)
-        return result.stdout.strip()
+    saved_file = tmp_path / "existing-accounts.json"
+    saved_file.write_text('{"accounts":{"existing":{"api_key":"fake-saved-key"}}}')
+    saved_content = saved_file.read_bytes()
+    settings = {"OPENAI_ADS_API_KEY": "fake-ui-key", "OPENAI_ADS_API_KEY_10": "fake-tenth-key",
+                "FLIN_ADS_ACCOUNT_NAME_10": "tenth", "FLIN_CHATGPT_ADS_CONFIG": str(saved_file)}
 
-    publish("9.0.0")
-    assert launch() == "9.0.0"
-    publish("9.0.1")
-    publish("9.1.0rc1")
-    assert launch() == "9.0.1"
-    assert launch() == "9.0.1"
+    def launch():
+        result = subprocess.run([config["command"], *args], env={**os.environ, **settings},
+                                capture_output=True, text=True, timeout=30, check=True)
+        data = json.loads(result.stdout)
+        assert data["settings"] == settings
+        assert saved_file.read_bytes() == saved_content
+        return data["version"]
+
+    publish("0.1.6")
+    assert launch() == "0.1.6"
+    publish("0.1.7")
+    publish("0.1.8rc1")
+    publish("0.2.0")
+    publish("1.0.0")
+    assert launch() == "0.1.7"
+    assert launch() == "0.1.7"

@@ -1,6 +1,7 @@
 """Build a Claude Desktop auto-update launcher without credentials."""
 
 import json
+import shutil
 import tomllib
 import zipfile
 from pathlib import Path
@@ -24,7 +25,10 @@ def build(root: Path, output_dir: Path) -> Path:
             "dependencies = []\n\n[tool.uv]\npackage = false\n",
         )
         archive.write(root / "README.md", "README.md")
-        archive.write(root / "SECURITY.md", "SECURITY.md")
+        for name in ("SECURITY.md", "PRIVACY.md", "SUPPORT.md"):
+            archive.write(root / name, name)
+        archive.write(root / "docs/security-review-0.1.5.md", "docs/security-review-0.1.5.md")
+    shutil.copyfile(output, output_dir / "flin-chatgpt-ads-mcp.mcpb")
     return output
 
 

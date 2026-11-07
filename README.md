@@ -1,67 +1,80 @@
 # flin ChatGPT Ads MCP
 
-Read-only MCP für die **OpenAI Advertiser API**, mit separaten API-Keys pro Kundenkonto.
-Python 3.11+, MCP über stdio. Version 0.1.5.
+OpenAI-Werbedaten lesend auswerten, mit getrennten API-Keys für bis zu zehn Konten
+in Claude Desktop. Eine JSON-Datei ist für diese Konten nicht erforderlich.
+
+## Start auf dem Mac (Apple Silicon: M1 oder neuer)
+
+1. **[Desktop-Paket herunterladen](https://github.com/flin-agency/flin-chatgpt-ads-mcp/releases/latest/download/flin-chatgpt-ads-mcp.mcpb)**.
+2. In einer aktuellen Claude-Desktop-Version mit MCPB-0.4-/UV-Unterstützung unter
+   **Einstellungen → Erweiterungen → Erweiterung installieren** importieren.
+3. Die freigegebenen Werte vom zuständigen Administrator bzw. aus dem Passwortmanager
+   holen. Für jedes genutzte Konto **Kontoname** und **OpenAI Ads API-Key** eintragen;
+   ungenutzte Kontofelder leer lassen. Ein Standardkonto ist optional.
+4. Die Anmeldung erfolgt über den **Advertiser API-Key**, ohne OAuth-Browserdialog.
+   Erstellung und Nutzung müssen kundenseitig freigegeben sein. Ein normaler
+   OpenAI-Modell-API-Key funktioniert nicht. Dieses Update erteilt keine Freigabe.
+5. Claude neu starten und eingeben: **«Rufe nur `connection_status` auf, ohne weitere
+   API-Abfragen.»** Erwartet: `configuration_status: configured`,
+   `auth_status: unknown`, `live_access: not_checked`. `server_version` zeigt den
+   tatsächlich gestarteten Server. Das bestätigt die lokale Einrichtung, keinen
+   funktionierenden Kundenzugriff. Bei `incomplete` der ausgegebenen Hilfe folgen.
+
+**JSON-Priorität:** Eine ausgewählte optionale Kontodatei ersetzt **alle** UI-Konten.
+Eine fehlerhafte Datei führt zu `incomplete`; es wird nicht auf andere Keys gewechselt.
+Dateiauswahl leeren, wenn die UI-Felder genutzt werden sollen. Kontonamen müssen
+1–64 Buchstaben, Zahlen, `_` oder `-` enthalten und eindeutig sein. Ohne Namen gelten
+`default`, `konto_2` bis `konto_10`. Bei mehreren Konten ohne Standard ist für
+API-Aufrufe eine ausdrückliche Kontowahl erforderlich.
+
+Die sensiblen Felder werden vom Claude-Host gespeichert und als Prozessumgebung
+übergeben. Die konkrete Schutzwirkung hängt von Host und Betriebssystem ab;
+Details und Bereinigung: [Datenschutz](PRIVACY.md), [Sicherheit](SECURITY.md),
+[Hilfe](SUPPORT.md). Das Paket ist unsigniert. Intel-Macs und die bisherigen
+Python-/stdio-Installationen bleiben unterstützt.
+
+## Updates, Versionen und Fallback
+
+Die **Erweiterungsversion** bezeichnet den Starter mit den UI-Feldern.
+**`connection_status.server_version`** bezeichnet den laufenden Python-Server.
+Einmalig das aktuelle Paket als Update importieren, auch bei installiertem Starter
+0.1.5: Erst dadurch gilt die neue Versionsgrenze. ID und alle zehn Kontofelder
+bleiben gleich. Eine zuvor ausgewählte JSON-Datei behält ihren Vorrang.
+
+Bei jedem MCP-Neustart sucht der Starter die neueste stabile PyPI-Version innerhalb
+**`>=0.1.6,<0.2`**. Die Grenze entspricht der vorhandenen Schnittstelle: `--desktop`,
+zehn unveränderte Umgebungsfeldpaare, JSON-Priorität, bestehende Tools plus der
+neue lokale Status. Vorabversionen und 0.2 oder höher werden nicht automatisch
+übernommen. Kompatible 0.1-Patches erfordern keinen Paketimport. Änderungen an
+Starter/UI oder ein neuer Schnittstellenbereich benötigen einen neuen Import.
+Künftige Releases müssen diese Verträge weiterhin prüfen; die Grenze ist keine
+Garantie für noch ungeprüfte Versionen.
+
+Laufende Sitzungen werden nicht unterbrochen. Claude vollständig beenden und neu
+öffnen, um ein Update zu übernehmen. Kontoeinstellungen werden nicht überschrieben.
+Der Paketcache wird wiederverwendet, die Versionsprüfung benötigt aber Netzwerk.
+**Offline-Fallback:** Eine bereits laufende Sitzung weiterverwenden und den
+Neustart verschieben. Bei fehlgeschlagenem Start Verbindung wiederherstellen und
+neu starten. Ein erfolgreicher Offline-Neustart wird nicht versprochen; bei einem
+Releaseproblem kann der Administrator eine bekannte Serverversion manuell fixieren
+(siehe [SUPPORT.md](SUPPORT.md)).
+
+[Versionierte Pakete und Prüfsummen](https://github.com/flin-agency/flin-chatgpt-ads-mcp/releases)
+bleiben neben dem stabilen Dateinamen verfügbar.
 
 ## Funktionen
 
-21 Werkzeuge: konfigurierte Konten, Kontoinformationen und Ausgabenlimits,
-Kampagnen, Anzeigengruppen, Anzeigen, Landingpage-Crawl, Insights auf vier Ebenen,
-Audit-Logs, Geo-Suche, Conversion-Einstellungen, Pixel sowie Produktfeeds und Uploadstatus.
-
-Nur fest hinterlegte GET-Endpunkte sind erreichbar. Es gibt kein Werkzeug für
-freie URLs, HTTP-Methoden, Uploads, Änderungen oder Aktivierung. Auch der per POST
-abgefragte Conversion-Sonderreport ist in dieser Version ausgeschlossen.
-API-Keys werden nur aus der lokalen Konfiguration gelesen, niemals als
-Werkzeugparameter angefordert. Weiterleitungen werden nicht verfolgt.
-
-## Claude Desktop auf macOS (.mcpb)
-
-1. **[flin-chatgpt-ads-mcp-0.1.5.mcpb herunterladen](https://github.com/flin-agency/flin-chatgpt-ads-mcp/releases/download/v0.1.5/flin-chatgpt-ads-mcp-0.1.5.mcpb)**.
-2. In Claude Desktop unter **Einstellungen → Erweiterungen → Erweiterung installieren**
-   die Datei auswählen (je nach Version auch per Doppelklick).
-3. In den Erweiterungseinstellungen für **Konto 1 bis Konto 10** jeweils den Namen
-   und den **OpenAI Ads API-Key** eintragen. Ungenutzte Kontofelder leer lassen.
-4. Optional ein **Standardkonto** anhand seines Namens festlegen. Bei mehreren Konten
-   ohne Standardkonto muss Claude das gewünschte Konto ausdrücklich auswählen.
-
-**Für bis zu zehn Konten ist keine JSON-Datei nötig.** Kontonamen dürfen 1–64
-Buchstaben, Zahlen, Unterstriche oder Bindestriche enthalten und müssen eindeutig
-sein. Ohne Namen heissen die Konten `default`, `konto_2` bis `konto_10`.
-Die Key-Felder sind als sensibel markiert; Claude verwaltet deren sichere Speicherung
-über die macOS-Schlüsselbundintegration. Keys gehören ausschliesslich in die Key-Felder.
-
-Eine optionale JSON-Datei ist für bestehende oder grössere Konfigurationen weiterhin
-möglich. Wird eine Datei ausgewählt, hat sie Vorrang vor **allen** UI-Konten. Bei einer
-fehlerhaften Datei wird nicht unbemerkt auf andere Konten umgeschaltet.
-
-Benötigt eine aktuelle Claude-Desktop-Version mit MCPB-0.4-/UV-Unterstützung.
-Claude Desktop verwaltet Python und Abhängigkeiten. Das Paket enthält einen kleinen
-Starter. **Bei jedem MCP-Start wird die neueste kompatible stabile Serverversion
-von PyPI geladen.** Bereits vorhandene Pakete werden aus dem Cache verwendet;
-der Server-Versionsstand wird trotzdem neu geprüft. Vorabversionen werden ausgeschlossen.
-Internet und eine erreichbare PyPI-Veröffentlichung sind für den Start erforderlich.
-Bei Netzwerkfehlern kann der Start scheitern; nach Wiederherstellung neu starten.
-
-**Einmalig die `.mcpb` ab Version 0.1.5 als Update importieren**, auch wenn bereits
-0.1.4 installiert ist. Danach genügt bei neuen PyPI-Versionen ein vollständiges
-Beenden und erneutes Öffnen von Claude Desktop bzw. ein Neustart der Erweiterung.
-Eine laufende Sitzung wechselt ihre Serverversion nicht im Hintergrund.
-Erweiterungskennung und alle zehn Konto-/Key-Felder bleiben erhalten; der Starter
-ändert keine Zugangsdaten oder Konfigurationsdateien.
-
-Die angezeigte Erweiterungsversion bezeichnet den Starter und kann deshalb älter
-sein als die laufende Serverversion. Änderungen an den UI-Feldern oder am Starter
-benötigen weiterhin einen neuen `.mcpb`-Import; normale Serverupdates nicht.
-Diese automatische Aktualisierung ersetzt die feste Serverversion aus 0.1.4 und
-vertraut künftigen stabilen Veröffentlichungen des Projekts auf PyPI.
-
-Das Paket ist nicht signiert. Die Datei `SHA256SUMS` im Release ermöglicht die
-Integritätsprüfung. Prüfumfang und Grenzen stehen in [SECURITY.md](SECURITY.md).
+22 Werkzeuge: lokaler Verbindungsstatus, konfigurierte Konten, Kontoinformationen,
+Ausgabenlimits, Kampagnen, Anzeigengruppen, Anzeigen, Landingpage-Crawl, Insights,
+Audit-Logs, Geo-Suche, Conversion-Einstellungen, Pixel und Produktfeeds.
+Nur fest hinterlegte GET-Endpunkte, keine freien URLs oder Schreiboperationen.
+`connection_status` öffnet keinen Browser, fragt keine API ab und gibt weder Keys
+noch Kontonamen oder Kundendaten aus. Live-Abfragen erfolgen ausschliesslich über
+die bestehenden Datentools nach entsprechender Freigabe.
 
 ## Alternative macOS-Installation für andere MCP-Clients
 
-1. `flin-chatgpt-ads-mcp-0.1.5-macos.pkg` öffnen. Es legt das Installationspaket
+1. Die versionierte `.pkg` aus den [Releases](https://github.com/flin-agency/flin-chatgpt-ads-mcp/releases) öffnen. Es legt das Installationspaket
    unter `/Applications/flin ChatGPT Ads MCP` ab. Alternativ die ZIP entpacken.
 2. Dort `install.command` öffnen. Benötigt **uv oder Python 3.11+** und Internet
    für Abhängigkeiten. Mit uv wird bei Bedarf Python 3.12 bereitgestellt.

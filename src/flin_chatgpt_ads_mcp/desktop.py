@@ -1,11 +1,8 @@
 """Claude Desktop entry point; use only explicitly selected credentials."""
 
-import asyncio
 import os
-import sys
 
 from flin_chatgpt_ads_mcp.config import Config, ConfigError, load_config, validate_key
-from flin_chatgpt_ads_mcp.server import run
 
 
 def setting(env_name, field_name):
@@ -40,8 +37,12 @@ def desktop_config():
 
 
 if __name__ == "__main__":
+    import asyncio
+
+    from flin_chatgpt_ads_mcp.server import run
+
     try:
-        asyncio.run(run(desktop_config()))
-    except ConfigError as exc:
-        print(str(exc), file=sys.stderr)
-        raise SystemExit(2) from None
+        config = desktop_config()
+    except ConfigError:
+        config = Config({})
+    asyncio.run(run(config))

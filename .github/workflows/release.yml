@@ -25,9 +25,13 @@ jobs:
       - run: uv run pytest
       - run: uv run ruff check .
       - run: uv build
+      - run: npx --yes @anthropic-ai/mcpb@2.1.2 validate desktop/manifest.json
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1
+      - run: uv run python scripts/build_mcpb.py
       - name: Verify published version through desktop auto-updater
         run: python scripts/verify_pypi.py
+      - name: Verify built desktop bundle against PyPI on Linux
+        run: uv run --locked python scripts/verify_desktop.py dist/flin-chatgpt-ads-mcp.mcpb
   macos:
     needs: publish
     permissions:

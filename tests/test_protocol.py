@@ -19,7 +19,7 @@ async def test_real_stdio_handshake_and_tool_call(tmp_path):
     ):
         await session.initialize()
         tools = (await session.list_tools()).tools
-        assert len(tools) == 21
+        assert len(tools) == 22
         assert all(
             t.annotations.readOnlyHint and not t.annotations.destructiveHint
             for t in tools
